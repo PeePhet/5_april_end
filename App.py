@@ -1,13 +1,13 @@
 from PyQt6.QtCore import QSize, Qt, QRectF
 from PyQt6.QtGui import QImage, QPalette, QBrush , QPainter , QColor ,QFont
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QInputDialog , QLineEdit , QDialog ,QMessageBox ,QComboBox
-from library_system import Library, Member, Book, Loan
+from library_system import *
 from datetime import datetime, timedelta
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Library")
-        self.setFixedSize(QSize(1600, 800))
+        self.setFixedSize(QSize(1920, 1080))
         # สร้าง class lib
         self.library = Library()
         
