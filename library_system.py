@@ -113,6 +113,15 @@ class Library:
     def remove_loan(self ,loan):
         self.__loan.remove(loan)
 
+    def get_most_popular(self):
+        pub_list = self.__publication
+        if len(pub_list) > 0:
+            max_rating = max(pub_list, key=lambda pub: pub.get_rating()).get_rating()
+            pub_most = [pub for pub in pub_list if pub.get_rating() == max_rating]
+            return pub_most
+        return []
+
+
 
 
 # class Member
@@ -157,6 +166,7 @@ class Book(Publication):
         super().__init__(title, author, year)
         self.__isbn = isbn
         self.__genre = genre
+        self.__rating = 0
         
     def search_item(self,lip):
         pub_list = lip.get_publication()
@@ -194,6 +204,12 @@ class Book(Publication):
     
     def get_year(self):
         return super().get_year()
+    
+    def get_rating(self):
+        return self.__rating
+    
+    def add_rating(self):
+        self.__rating += 1
         
     
 
@@ -213,6 +229,7 @@ class Loan:
         if self.__publication in pub_list:
             lip.remove_publication(self.__publication)
             lip.add_loan(self)
+            self.__publication.add_rating()
             message ='Loan successfully'
             return message
         else:

@@ -7,7 +7,7 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Library")
-        self.setFixedSize(QSize(1600, 800))
+        self.showFullScreen()
         # สร้าง class lib
         self.library = Library()
         
@@ -93,6 +93,28 @@ class MainWindow(QWidget):
         painter.drawText(text_rect3, Qt.AlignmentFlag.AlignHCenter, "BORROWING")
         self.display_detail_borrow(painter , rect3)
 
+        rect4 = QRectF(60*25, 180, 400, 600)
+        painter.drawRect(rect4)
+        margin = 10
+        text_rect4 = QRectF(rect4.x() + margin, rect4.y() + margin, rect4.width() - 2 * margin, rect4.height() - 2 * margin)
+        # เขียนข้อความ
+        painter.setFont(QFont("Arial", 12))
+        painter.drawText(text_rect4, Qt.AlignmentFlag.AlignHCenter, "OVERDUE")
+        self.display_detail_over_due(painter,rect4)
+
+        rect5 = QRectF(60, 200 *4, 1500, 150)
+        painter.drawRect(rect5)
+        margin = 10
+        text_rect5 = QRectF(rect5.x() + margin, rect5.y() + margin, rect5.width() - 2 * margin, rect5.height() - 2 * margin)
+        # เขียนข้อความ
+        painter.setFont(QFont("Arial", 12))
+        painter.drawText(text_rect5, Qt.AlignmentFlag.AlignHCenter, "Overdue")
+        self.display_detail_popular(painter ,rect5)
+
+
+
+
+
     # แสดงข้อมูล member ภายใน lib
     def display_detail_member(self , painter , rect):
          mem_list = self.library.get_member()
@@ -121,7 +143,35 @@ class MainWindow(QWidget):
          # ตัวอย่างการแสดงข้อมูลสมาชิก
          painter.drawText(text_rect, Qt.AlignmentFlag.AlignLeft, f"{index+1}  Name: {loan.get_member().get_name()}, Title: {loan.get_publication().get_title()} , ISBN : {loan.get_publication().get_isbn()}\nBorrowing date :{loan.get_borrow_date()}\nDue to :{loan.get_due_date()}")
 
-
+    def display_detail_over_due(self , painter , rect):
+         current_time = datetime.now()
+         loan_list = self.library.get_loan()
+         for index, loan in enumerate(loan_list):
+            if loan.get_due_date() < current_time:
+                margin = 10
+                text_rect = QRectF(rect.x() + margin , rect.y() + (margin*5 * (index+1)), rect.width() - 2 * margin, rect.height() - 2 * margin)
+                painter.setFont(QFont("Arial", 12))
+                # ตัวอย่างการแสดงข้อมูลสมาชิก
+                painter.drawText(text_rect, Qt.AlignmentFlag.AlignLeft, f"{index+1}  Name: {loan.get_member().get_name()}, Title: {loan.get_publication().get_title()} , ISBN : {loan.get_publication().get_isbn()}\nBorrowing date :{loan.get_borrow_date()}\nDue to :{loan.get_due_date()}")
+            
+    def display_detail_popular(self , painter , rect):
+         most_list = self.library.get_most_popular()
+         if len(most_list) > 0:
+            for index, most in enumerate(most_list):
+                    margin = 10
+                    text_rect = QRectF(rect.x() + margin , rect.y() + (margin*5 * (index+1)), rect.width() - 2 * margin, rect.height() - 2 * margin)
+                    painter.setFont(QFont("Arial", 12))
+                    # ตัวอย่างการแสดงข้อมูลสมาชิก
+                    painter.drawText(text_rect, Qt.AlignmentFlag.AlignLeft, f"{index+1}  Title: {most.get_title()}, Author: {most.get_author()} , Genre : {most.get_genre()} , Year : {most.get_year()} ,  ISBN : {most.get_isbn()}")
+         else:
+             most_list  = self.library.get_loan()
+             for index, most in enumerate(most_list):
+                    margin = 10
+                    text_rect = QRectF(rect.x() + margin , rect.y() + (margin*5 * (index+1)), rect.width() - 2 * margin, rect.height() - 2 * margin)
+                    painter.setFont(QFont("Arial", 12))
+                    # ตัวอย่างการแสดงข้อมูลสมาชิก
+                    if most.get_due_date():
+                        painter.drawText(text_rect, Qt.AlignmentFlag.AlignLeft, f"{index+1}  Title: {most.get_publication().get_title()}, Author: {most.get_publication().get_author()} , Genre : {most.get_publication().get_genre()} , Year : {most.get_publication().get_year()} ,  ISBN : {most.get_publication().get_isbn()}")
 
     # สร้างปุ่มต่างๆ
     def display_button(self, text, layout):
@@ -418,6 +468,7 @@ class MainWindow(QWidget):
         seven_days_later = current_time + timedelta(days=7)
         new_loan = Loan(member , book ,current_time, seven_days_later)
         message = new_loan.loan_book(lib)
+        
         if message:
             # สร้าง QMessageBox
             msg_box = QMessageBox()
@@ -494,7 +545,6 @@ class MainWindow(QWidget):
             lib = self.library
             mem = lib.search_member(member_id)
             loan_info = lib.search_loan(mem , book_isbn)
-            print(loan_info)
             if loan_info:
                 self.display_messagebox(dialog,'return book successfully')
                 loan_info.return_booK(lib)
