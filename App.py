@@ -7,11 +7,7 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Library")
-<<<<<<< HEAD
         self.setFixedSize(QSize(1920, 1080))
-=======
-        self.showFullScreen()
->>>>>>> 156c4844172d582d4388354661a3aab21361ec4a
         # สร้าง class lib
         self.library = Library()
         
